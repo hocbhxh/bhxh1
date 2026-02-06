@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tính BHXH Tự Nguyện - Portal Pro</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="circle-decor"></div>
+        <button class="header-menu-btn" onclick="checkAuth()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="header-content" onclick="window.location.reload()">
+            <div class="header-title-group">
+                <i class="fa-solid fa-shield-halved app-logo-icon"></i>
+                <h1>Tính BHXH Tự Nguyện</h1>
+            </div>
+            <p>Bảo Hiểm Xã Hội - An Sinh Cho Mọi Nhà</p>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="neo-card">
+            <div class="card-header">
+                <div class="card-title"><div class="icon-wrap"><i class="fa-solid fa-sliders"></i></div>Tính mức đóng</div>
+                <button class="btn-round" onclick="toggleSettings()"><i class="fa-solid fa-gear"></i></button>
+            </div>
+            <div id="settingsBox" class="settings-box">
+                <div class="input-row"><label>Hệ số trượt giá (CPI)</label><input type="number" id="inflationRate" class="custom-input" value="1.30" step="0.01" onchange="calculate()"></div>
+                <div class="input-row"><label>Lãi suất đầu tư (%/tháng)</label><input type="number" id="interestRate" class="custom-input" value="0.31" step="0.001" onchange="calculate()"></div>
+            </div>
+            <div class="input-row"><label>Mức thu nhập lựa chọn</label><div class="select-box"><select id="incomeSelect" class="custom-select" onchange="calculate()"></select></div></div>
+            <div class="grid-2">
+                <div class="input-row"><label>Ngân sách Nhà nước hỗ trợ</label><div class="select-box">
+                    <select id="stateSupportSelect" class="custom-select" onchange="calculate()">
+                        <option value="10">10%</option>
+                        <option value="20" selected>Khác (20%)</option>
+                        <option value="25"> 25%</option>
+                        <option value="30">DTTS (30%)</option>
+                        <option value="40">Cận nghèo (40%)</option>
+                        <option value="50">Hộ nghèo (50%)</option>
+                    </select>
+                </div></div>
+                <div class="input-row"><label>Ngân sách Địa phương hỗ trợ</label><div class="select-box"><select id="localSupportSelect" class="custom-select" onchange="calculate()"><option value="0">0%</option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option></select></div></div>
+            </div>
+        </div>
+
+        <div class="neo-card" id="captureCard">
+            <div class="card-header"><div class="card-title"><div class="icon-wrap" style="color:#e74c3c"><i class="fa-solid fa-calculator"></i></div>Bảng tính chi tiết (2026)</div></div>
+            <div id="captureSummary" class="info-summary" style="display:none">Thu nhập: <b id="sumIncome">...</b> - Hỗ trợ: <b id="sumSupport">...</b></div>
+            <div class="web-table-head"><div>Phương thức đóng</div><div class="text-right">Tổng đóng (22%)</div><div class="text-right">NS Hỗ trợ</div><div class="text-right">Giảm / Lãi</div><div class="text-right">THỰC ĐÓNG</div></div>
+            <div id="webResultList"></div>
+            <div class="pension-web">
+                <div><i class="fa-solid fa-piggy-bank"></i> LƯƠNG HƯU DỰ KIẾN (SAU 15 NĂM)</div>
+                <div>Nam: <span id="webPenMale">...</span> | Nữ: <span id="webPenFemale">...</span></div>
+            </div>
+        </div>
+
+        <div class="neo-card">
+            <div class="card-header">
+                <div class="card-title"><div class="icon-wrap" style="color:#27ae60"><i class="fa-solid fa-circle-question"></i></div>Câu hỏi thường gặp</div>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">1. Đối tượng tham gia là ai? <i class="fa-solid fa-chevron-down faq-icon"></i></button><div class="faq-answer"><div class="faq-content">Công dân Việt Nam từ đủ 15 tuổi trở lên và không thuộc đối tượng tham gia BHXH bắt buộc. Mức đóng hằng tháng bằng 22% mức thu nhập tháng do người tham gia lựa chọn. Mức thu nhập thấp nhất bằng chuẩn nghèo khu vực nông thôn (1.500.000đ).</div></div></div>
+                <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">2. Có được rút 1 lần không? <i class="fa-solid fa-chevron-down faq-icon"></i></button><div class="faq-answer"><div class="faq-content">Được, Nếu tham gia BHXH tự nguyện trước 1/7/2025. Tham gia BHXH tự nguyện từ ngày 1/7/2025, sẽ không được rút BHXH một lần, trừ khi thuộc các trường hợp đặc biệt quy định tại Luật BHXH 2024.</div></div></div>
+                <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">3. Có được hưởng thai sản không? <i class="fa-solid fa-chevron-down faq-icon"></i></button><div class="faq-answer"><div class="faq-content">Được, Lao động nữ sinh con hoặc Lao động nam có vợ sinh con đóng từ đủ 6 tháng trong vòng 12 trước khi sinh. Mức hưởng 2 triệu đồng/con.</div></div></div>
+                <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">4. Quyền lợi khi tham gia? <i class="fa-solid fa-chevron-down faq-icon"></i></button><div class="faq-answer"><div class="faq-content">Người tham gia được hưởng chế độ Hưu trí (lương hưu) và chế độ Tử tuất (mai táng phí, trợ cấp tuất). Lương hưu được nhà nước điều chỉnh tăng theo chỉ số giá tiêu dùng (CPI) để đảm bảo cuộc sống. Ngoài ra được cấp thẻ BHYT miễn phí trong suốt thời gian hưởng lương hưu.</div></div></div>
+                <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">5. Điều kiện hưởng lương hưu? <i class="fa-solid fa-chevron-down faq-icon"></i></button><div class="faq-answer"><div class="faq-content">Đủ tuổi nghỉ hưu theo quy định và có thời gian đóng BHXH từ đủ 15 năm trở lên (Luật BHXH 2024).</div></div></div>
+            </div>
+        </div>
+
+        <div class="fab-bar">
+            <button id="btnCopy" class="btn-fab btn-zalo" onclick="copyToZalo()"><i class="fa-solid fa-copy"></i> Copy Zalo</button>
+            <button id="btnImg" class="btn-fab btn-img" onclick="exportImage()"><i class="fa-solid fa-camera"></i> Ảnh</button>
+            <button class="btn-fab btn-pdf" onclick="window.print()"><i class="fa-solid fa-print"></i> In PDF</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="crmOverlay" onclick="toggleCRM()"></div>
+    <div class="crm-sidebar" id="crmSidebar">
+        <div class="crm-header">
+            <div class="crm-title" id="crmHeaderTitle">Danh sách khách hàng</div>
+            <button class="btn-close-crm" onclick="toggleCRM()">&times;</button>
+        </div>
+
+        <div id="crmListMode">
+            <div class="filter-box">
+                <div class="filter-row">
+                    <div style="flex:1"><div class="filter-label">Từ ngày</div><input type="date" id="filterFrom" class="date-input"></div>
+                    <div style="flex:1"><div class="filter-label">Đến ngày</div><input type="date" id="filterTo" class="date-input"></div>
+                </div>
+            </div>
+
+            <div class="toolbar-crm">
+                <button class="btn-add-new" onclick="showAddCustomerForm()"><i class="fa-solid fa-user-plus"></i> Thêm</button>
+                <button class="btn-excel" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Xuất</button>
+                <input type="file" id="fileImport" accept=".xlsx, .xls" style="display:none" onchange="importFromExcel(this)">
+                <button class="btn-import" onclick="document.getElementById('fileImport').click()"><i class="fa-solid fa-file-import"></i> Nhập</button>
+            </div>
+            
+            <div class="list-header-row">
+                <div id="listTitle" style="font-weight:bold; color:#aaa; font-size:0.8rem;">DANH SÁCH ĐÃ LƯU:</div>
+                <div id="searchBox" style="display:none; flex:1; margin-right:10px;">
+                    <input type="text" id="searchInput" class="search-input-compact" placeholder="Tìm tên, số BHXH, SĐT..." onkeyup="filterCRMList()">
+                </div>
+                <button class="btn-icon-plain" id="btnSearchToggle" onclick="toggleSearchBox()" title="Tìm kiếm"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
+            <div id="crmListContainer"></div>
+            
+            <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+        </div>
+
+        <div id="crmFormMode">
+            <div class="crm-input-group"><label class="crm-label">Mã số BHXH</label><input type="number" id="custBhxh" class="crm-input" placeholder="10 chữ số..." onchange="checkAutoFillBHXH()"></div>
+            
+            <div class="crm-input-group"><label class="crm-label">Họ và tên</label><input type="text" id="custName" class="crm-input" placeholder="Nhập họ tên..."></div>
+            <div class="crm-input-group"><label class="crm-label">Ngày sinh</label><input type="date" id="custDob" class="crm-input"></div>
+            <div class="crm-input-group"><label class="crm-label">Giới tính</label><select id="custGender" class="crm-input"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select></div>
+            <div class="crm-input-group"><label class="crm-label">CCCD / CMND</label><input type="number" id="custCccd" class="crm-input" placeholder="Số căn cước..."></div>
+            <div class="crm-input-group"><label class="crm-label">Dân tộc</label><input type="text" id="custNation" class="crm-input" value="Kinh"></div>
+            <div class="crm-input-group"><label class="crm-label">Số điện thoại</label><input type="tel" id="custPhone" class="crm-input" placeholder="09..."></div>
+            <div class="crm-input-group"><label class="crm-label">Địa chỉ</label><textarea id="custAddr" class="crm-input" rows="2" placeholder="Nhập địa chỉ..."></textarea></div>
+            <div class="crm-input-group"><label class="crm-label">Phương thức đóng</label>
+                <select id="custMethod" class="crm-input" onchange="autoCalculateToMonth()">
+                    <option value="1">1 tháng</option><option value="3">3 tháng</option><option value="6">6 tháng</option><option value="12">12 tháng (1 năm)</option><option value="60">60 tháng (5 năm)</option>
+                </select>
+            </div>
+            <div class="crm-input-group"><label class="crm-label">Giai đoạn đóng</label>
+                <div class="date-range-grid">
+                    <input type="month" id="custFrom" class="crm-input" title="Từ tháng" onchange="autoCalculateToMonth()">
+                    <input type="month" id="custTo" class="crm-input" title="Đến tháng (Tự động)" readonly>
+                </div>
+            </div>
+            <div class="crm-input-group"><label class="crm-label">Số tiền đóng (VNĐ)</label><input type="text" id="custAmount" class="crm-input" placeholder="Nhập số tiền..."></div>
+            <div class="crm-input-group"><label class="crm-label">Ghi chú</label><textarea id="custNote" class="crm-input" rows="2" placeholder="Nhập ghi chú..."></textarea></div>
+            <div class="btn-action-row"><button class="btn-crm-cancel" onclick="hideAddCustomerForm()">Hủy</button><button class="btn-crm-save" id="btnSaveCrm" onclick="saveCustomerProfile()">Lưu hồ sơ</button></div>
+        </div>
+    </div>
+
+    <div class="overlay-modal" id="loginOverlay" style="z-index: 3000;"></div>
+    <div class="modal-box" id="loginModal" style="z-index: 3005;">
+        <div class="modal-body" style="padding: 30px;">
+            <div class="login-logo"><i class="fa-solid fa-lock"></i></div>
+            <div class="login-title">Đăng nhập hệ thống</div>
+            <div class="crm-input-group"><input type="text" id="loginUser" class="crm-input" placeholder="Tên đăng nhập"></div>
+            <div class="crm-input-group"><input type="password" id="loginPass" class="crm-input" placeholder="Mật khẩu"></div>
+            <button class="login-btn" onclick="performLogin()">Đăng nhập</button>
+            <div style="margin-top:15px; font-size:0.8rem; color:#888;">* Mặc định: admin / 123456</div>
+        </div>
+    </div>
+
+    <div class="overlay-modal" id="modalOverlay" onclick="closeAllModals()"></div>
+    <div class="modal-box" id="profileModal">
+        <div class="modal-header"><div class="modal-title"><i class="fa-regular fa-id-card"></i> Thông tin khách hàng</div><button class="btn-close-modal" onclick="closeAllModals()">&times;</button></div>
+        <div class="modal-body" id="profileModalBody"></div>
+    </div>
+
+    <div id="print-container">
+        <div class="print-header-top">
+            <div style="font-weight:bold; font-size:16pt;">BẢNG KÊ TÍNH BHXH TỰ NGUYỆN</div>
+            <div style="font-style:italic; margin-top:5px;">Ngày lập: <span id="printDate"></span></div>
+        </div>
+        <div class="print-info-group">
+            <div>Mức thu nhập lựa chọn: <b id="printIncome">...</b></div>
+            <div>Tỷ lệ hỗ trợ: <span id="printSupport">...</span></div>
+            <div><i>(Lãi suất đầu tư: <span id="printRate"></span> - CPI: <span id="printCPI"></span>)</i></div>
+        </div>
+        <table class="print-table">
+            <thead><tr><th>PHƯƠNG THỨC</th><th>TỔNG ĐÓNG (22%)</th><th>HỖ TRỢ</th><th>LÃI/PHẠT</th><th>THỰC ĐÓNG</th></tr></thead>
+            <tbody id="printResultTable"></tbody>
+        </table>
+        <div class="print-pension-row">LƯƠNG HƯU (15 NĂM): Nam: <span id="printPenMaleVal" class="p-green">...</span> - Nữ: <span id="printPenFemaleVal" class="p-red">...</span></div>
+        <div class="print-footer"><div class="sign-col"><div class="sign-title">NGƯỜI ĐƯỢC TƯ VẤN</div></div><div class="sign-col"><div class="sign-title">NGƯỜI LẬP BẢNG</div></div></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
