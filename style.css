@@ -109,7 +109,7 @@
             /* Dòng Thực đóng (Nổi bật) */
             .res-col:last-child { margin-top: 5px; background: #fff5e6; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; width: 100%; }
             .res-col:last-child::before { content: "THỰC ĐÓNG:"; font-weight: 900; color: #e74c3c; font-size: 1rem; text-transform: uppercase; }
-            .res-final { font-size: 1.4rem; font-weight: 900; color: #e74c3c; }
+            .res-final { font-size: 1.2rem; font-weight: 900; color: #e74c3c; }
         }
 
         /* ==================================================================
@@ -211,4 +211,5 @@
             .print-table td:first-child { text-align: left; font-weight: bold; }
             .print-header-top { text-align: center; margin-bottom: 20px; }
             .print-footer { display: flex; justify-content: space-between; margin-top: 40px; }
+
         }
