@@ -101,7 +101,7 @@
             .res-col:not(:last-child) { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #555; border-bottom: 1px dashed #f5f5f5; padding-bottom: 5px; width: 100%; }
             
             /* Thêm nhãn (Label) giả lập cho mobile */
-            .res-col[data-label="Tổng đóng"]::before { content: "Tổng gốc (22%):"; color: #888; font-weight: 600; }
+            .res-col[data-label="Tổng đóng"]::before { content: "Tổng đóng (22%):"; color: #888; font-weight: 600; }
             .res-col[data-label="Hỗ trợ"]::before { content: "Nhà nước hỗ trợ:"; color: #27ae60; font-weight: 600; }
             .res-col[data-label="Lãi/Giảm"]::before { content: "Lãi / Giảm:"; color: #f39c12; font-weight: 600; }
             .res-val { text-align: right; font-weight: 700; }
@@ -109,7 +109,7 @@
             /* Dòng Thực đóng (Nổi bật) */
             .res-col:last-child { margin-top: 5px; background: #fff5e6; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; width: 100%; }
             .res-col:last-child::before { content: "THỰC ĐÓNG:"; font-weight: 900; color: #e74c3c; font-size: 1rem; text-transform: uppercase; }
-            .res-final { font-size: 1.2rem; font-weight: 900; color: #e74c3c; }
+            .res-final { font-size: 1.1rem; font-weight: 900; color: #e74c3c; }
         }
 
         /* ==================================================================
@@ -213,3 +213,4 @@
             .print-footer { display: flex; justify-content: space-between; margin-top: 40px; }
 
         }
+
